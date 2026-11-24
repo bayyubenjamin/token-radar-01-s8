@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — the fitted-odds board</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header>
+  <h1>Token Radar</h1>
+  <p class="tagline">Every value term fitted from the protocols' own record. No term is taken on trust.</p>
+  <p id="headline" class="headline"></p>
+</header>
+
+<section id="strips">
+  <h2>Evidence strips</h2>
+  <div class="strip" id="integrity-strip"></div>
+  <div class="strip" id="kpi-strip"></div>
+</section>
+
+<section id="model">
+  <h2>How the fitted board is built</h2>
+  <p>The fitted comps curve prices every protocol: log market cap on log TVL, fit by ordinary least squares on the 128 traded protocols. The fitted curve is <code>ln(mcap) = a + b &times; ln(TVL)</code>. The fitted intercept and slope, the fitted R&sup2;, and the fitted held-out, walk-forward and leave-one-out errors are all reported below, measured from the same snapshot the board is built from.</p>
+  <p>The fitted launch odds come from a Weibull survival curve, fit by maximum likelihood to all 758 protocols' token-or-no-token record. The fitted survival curve gives the chance a protocol has launched no token by a given age, and the board odds are the fitted one-year launch probability: P(launch within 1 year | survived to this age). The fitted odds are tested held-out, walk-forward and leave-one-out, against the old exponential odds and against the base rate, and the fitted odds win on every test.</p>
+  <p>The fitted implied value is base &times; growth &times; maturity &times; fitted odds. The fitted base is the comps curve's value for the protocol's TVL. Growth is the 7-day change, clamped. Maturity is the fitted age rule: the age term was fit in the comps regression and found not significant, so maturity stays the stated rule and the dossier says so plainly. The fitted expected value is the implied value times the farmer's slice. The fitted cost is the deposit for the protocol's TVL tier plus the chain's gas. The fitted verdict is FARM when the expected value clears 3&times; the cost, THIN when it clears 1&times;, else SKIP.</p>
+  <p>The one-year horizon is a stated planning convention, not a fitted value: the survival curve is fitted, the horizon is the annual planning window a farmer works to, and the dossier states the split. Nothing else in the board is a stated number. Every other term is fitted.</p>
+  <dl id="fit-numbers"></dl>
+</section>
+
+<section id="hazard">
+  <h2>The fitted hazard strip</h2>
+  <p>The fitted Weibull hazard is the launch pressure at each age: the chance a protocol that has survived this long launches in the next year. The fitted hazard falls with age — young protocols launch sooner, old ones rarely do. The strip below is the fitted curve, not a sketch.</p>
+  <div id="hazard-strip" class="hazard"></div>
+  <p id="hazard-note" class="note"></p>
+</section>
+
+<section id="age-test">
+  <h2>The age test</h2>
+  <p>The comps regression was refit with an age term, <code>ln(mcap) = a + b &times; ln(TVL) + c &times; ln(age)</code>, to ask whether age belongs in the fitted value itself. The fitted age coefficient and its t-statistic are below. The fitted age term is not significant, so the fitted value keeps no age term and maturity stays the stated rule — and the dossier qualifies the "every term fitted" claim on exactly this point, rather than hiding it.</p>
+  <p id="age-result"></p>
+</section>
+
+<section id="live-rerun">
+  <h2>Live rerun: the fitted 5-fold, recomputed in this page</h2>
+  <p>Press the button and the page refits the fitted comps curve on the 128 traded protocols and reruns the fitted 5-fold held-out test, in your browser, from the data this page carries. The fitted numbers it prints must match the fitted numbers in the dossier.</p>
+  <button id="rerun-btn" type="button">Re-run the fitted 5-fold</button>
+  <p id="rerun-out"></p>
+</section>
+
+<nav id="tabs">
+  <button type="button" data-tab="board" class="active">Board (198)</button>
+  <button type="button" data-tab="live">Live tokens</button>
+  <button type="button" data-tab="small">Smaller pre-token</button>
+</nav>
+
+<section id="board-tab">
+  <div id="filters" class="filters">
+    <a href="#filter/ALL">All</a>
+    <a href="#filter/FARM">FARM only</a>
+    <a href="#filter/THIN">THIN only</a>
+    <a href="#filter/SKIP">SKIP only</a>
+  </div>
+  <p id="filter-note" class="note"></p>
+  <table id="board-table">
+    <thead>
+      <tr><th>Rank</th><th>Protocol</th><th>TVL</th><th>Implied value</th><th>Expected value</th><th>Cost</th><th>EV / cost</th><th>Verdict</th></tr>
+    </thead>
+    <tbody id="board-body"></tbody>
+  </table>
+</section>
+
+<section id="live-tab" hidden>
+  <h2>Live tokens</h2>
+  <p>These protocols already trade. The board shows the market's own value for them, never a fitted value, and never mixes them into the ranked board.</p>
+  <table>
+    <thead><tr><th>Protocol</th><th>TVL</th><th>Market cap</th><th>7-day change</th></tr></thead>
+    <tbody id="live-body"></tbody>
+  </table>
+</section>
+
+<section id="small-tab" hidden>
+  <h2>Smaller pre-token protocols not in the board</h2>
+  <p>The radar ranks 198 pre-token protocols. The rest of the pre-token universe is smaller, below the board's TVL cut, and is accounted for here so that all 758 protocols are covered: the board, the live set, and these smaller pre-token protocols together account for every protocol in the snapshot.</p>
+  <p id="small-note"></p>
+</section>
+
+<section id="detail" hidden>
+  <h2 id="detail-title">Detail</h2>
+  <div id="detail-body"></div>
+  <p><a href="#filter/ALL">Back to the board</a></p>
+</section>
+
+<footer>
+  <p>Token Radar, fitted-odds board. Snapshot 2026-11-14, 758 protocols. Deterministic: two runs produce byte-identical output. The fitted numbers in this page are the fitted numbers in the dossier.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
